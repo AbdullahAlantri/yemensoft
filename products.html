@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>يمن سوفت للأنظمة المحاسبية</title>
+    <title>مركز فورس للأنظمة المحاسبية</title>
     <link rel="stylesheet" href="https://nami-tec.com/site/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="https://nami-tec.com/site/css/main.css" />
     <link rel="stylesheet" href="https://nami-tec.com/site/css/style.css?1738093981" />
@@ -14,6 +14,7 @@
             background-color: #e0f7fa; /* لون أخضر فاتح */
             margin: 0;
             padding: 0;
+            overflow: auto; /* إخفاء التمرير */
         }
 
         .products-section {
@@ -22,16 +23,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
             background-color: #e0f7fa; /* لون أخضر فاتح */
-            padding: 20px;
         }
 
+        /* الشعار المركزي */
         .center-logo {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             width: 150px;
             height: 150px;
             border-radius: 50%;
@@ -40,17 +37,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 2; /* التأكد من ظهور الشعار فوق المنتجات */
         }
 
         .center-logo img {
-            width: 80%;
+            width: 100%;
             height: auto;
         }
 
+        /* المنتجات الدوارة */
         .product {
             position: absolute;
-            width: 150px; /* تم زيادة الحجم */
-            height: 150px; /* تم زيادة الحجم */
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background-color: #fff;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
@@ -60,10 +59,11 @@
             text-align: center;
             padding: 10px;
             animation: rotate 20s linear infinite;
+            transform-origin: 300px; /* نصف قطر الدوران */
         }
 
         .product img {
-            width: 60%;
+            width: 200%;
             height: auto;
         }
 
@@ -76,18 +76,7 @@
             }
         }
 
-        .product:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .product:nth-child(2) {
-            animation-delay: -7s;
-        }
-
-        .product:nth-child(3) {
-            animation-delay: -14s;
-        }
-
+        /* تأثير المطر */
         .rain-effect {
             position: absolute;
             top: 0;
@@ -133,12 +122,10 @@
     <!-- ================ Header ================= -->
     <header>
         <section class="inner">
-            <!-- brand -->
             <a class="navbar-brand" href="#">
                 <img loading="lazy" src="force.jpg" alt="image">
-                <img loading="lazy" src="images.png" alt="شعار يمن سوفت" class="header-logo">
+                <img loading="lazy" src="images.png" alt="شعار مركز فورس" class="header-logo">
             </a>
-            <!-- navbar -->
             <nav class="navbar navbar-expand-lg">
                 <button class="navbar-toggler">
                     <span class="navbar-toggler-icon"></span>
@@ -165,29 +152,105 @@
         <!-- تأثير المطر -->
         <div class="rain-effect"></div>
 
-        <!-- شعار يمن سوفت في المنتصف -->
+        <!-- شعار مركز فورس في المنتصف -->
         <div class="center-logo">
-            <img src="yemensoft_group_cover.jpeg.jpg" alt="شعار يمن سوفت">
+            <img src="ونكس.jpeg" alt="شعار مركز فورس">
         </div>
 
-        <!-- المنتجات المتحركة -->
-        <div class="product">
-            <img src="Xالشعارات المعتمدة-08.png" alt="المتكامل">
-            <p>المتكامل</p>
+        <!-- المنتجات العشرة -->
+        <div class="product" style="animation-delay: 0s;">
+            <img src="onyx hospital.png" alt="المنتج 1">
+            
         </div>
-        <div class="product">
-            <img src="ميني شوب.jpg" alt="ميني شوب">
-            <p>ميني شوب</p>
+        <div class="product" style="animation-delay: -2s;">
+            <img src="onyx shop.png" alt="المنتج 2">
+            
         </div>
-        <div class="product">
-            <img src="al.png" alt="إنكس برو">
-            <p>إنكس برو</p>
+        <div class="product" style="animation-delay: -4s;">
+            <img src="OnyxDistribution.png" alt="المنتج 3">
+          
         </div>
-        <div class="product">
-            <img src="ونكس.jpeg" alt="المتكامل بلاس">
-            <p>إنكس برو</p>
+        <div class="product" style="animation-delay: -6s;">
+            <img src="OnyxMenu.png" alt="المنتج 4">
+            
         </div>
-        
+        <div class="product" style="animation-delay: -8s;">
+            <img src="OnyxOrdersDelivery.png" alt="المنتج 5">
+           
+        </div>
+        <div class="product" style="animation-delay: -10s;">
+            <img src="ONYX P.png" alt="المنتج 6">
+         
+        </div>
+        <div class="product" style="animation-delay: -12s;">
+            <img src="OnyxProAttended.png" alt="المنتج 7">
+          
+        </div>
+        <div class="product" style="animation-delay: -14s;">
+            <img src="OnyxProMobile.png" alt="المنتج 8">
+          
+        </div>
+        <div class="product" style="animation-delay: -16s;">
+            <img src="20231014_154111_٠٠٠٠--preview.png" alt="المنتج 9">
+           
+        </div>
+        <div class="product" style="animation-delay: -18s;">
+            <img src="ONYX.png" alt="المنتج 10">
+          
+        </div>
+    </section>
+
+    <!-- ================ Products Section ================= -->
+    <section id="products" class="products-section">
+        <!-- تأثير المطر -->
+        <div class="rain-effect"></div>
+
+        <!-- شعار مركز فورس في المنتصف -->
+        <div class="center-logo">
+            <img src="Xالشعارات المعتمدة-08.png" alt="شعار مركز فورس">
+        </div>
+
+        <!-- المنتجات العشرة -->
+        <div class="product" style="animation-delay: 0s;">
+            <img src="motakamel inventory.png" alt="المنتج 1">
+            
+        </div>
+        <div class="product" style="animation-delay: -2s;">
+            <img src="شئون الموظفين.png" alt="المنتج 2">
+            
+        </div>
+        <div class="product" style="animation-delay: -4s;">
+            <img src="مراكز الأشعة.png" alt="المنتج 3">
+          
+        </div>
+        <div class="product" style="animation-delay: -6s;">
+            <img src="المشتريات والموردين.png" alt="المنتج 4">
+            
+        </div>
+        <div class="product" style="animation-delay: -8s;">
+            <img src="بلاس موبايل.png" alt="المنتج 5">
+           
+        </div>
+        <div class="product" style="animation-delay: -10s;">
+            <img src="العيادات.png" alt="المنتج 6">
+         
+        </div>
+        <div class="product" style="animation-delay: -12s;">
+            <img src="المنشآت الطبية.png" alt="المنتج 7">
+          
+        </div>
+        <div class="product" style="animation-delay: -14s;">
+            <img src="العملاء والمبيعات.png" alt="المنتج 8">
+          
+        </div>
+        <div class="product" style="animation-delay: -16s;">
+            <img src="الحوالات والصرافة.png" alt="المنتج 9">
+           
+        </div>
+        <div class="product" style="animation-delay: -18s;">
+            <img src="الصناعي والإنتاجي.png" alt="المنتج 10">
+          
+        </div>
     </section>
 
     <!-- ================ Footer ================= -->
