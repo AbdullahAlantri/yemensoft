@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز فورس - الأخبار</title>
+    <style>
+        /* التنسيقات العامة */
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* تنسيقات النشر */
+        .post-box {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .post-content textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* أزرار التفاعل */
+        .post-actions {
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #65676b;
+        }
+
+        .action-btn:hover {
+            background: #f0f2f5;
+            border-radius: 8px;
+        }
+
+        /* التعليقات */
+        .comments-section {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .comment {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .comment-content {
+            background: #f0f2f5;
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 70%;
+        }
+
+        /* القائمة المنبثقة */
+        .dropdown-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 8px 0;
+            z-index: 100;
+            display: none;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background: #f0f2f5;
+        }
+
+        /* تنسيقات إضافية */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .about-section, .services-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .about-section h2, .services-section h2 {
+            margin-top: 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .emoji-picker {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 8px;
+            z-index: 100;
+            display: none;
+        }
+
+        .emoji-picker span {
+            cursor: pointer;
+            margin: 5px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- العنوان -->
+        <div class="header">
+            <img src="force.jpg" alt="شعار مركز فورس">
+            <h1>مركز فورس - الوكيل المعتمد لشركة يمن سوفت</h1>
+            <button id="sign-in-button">تسجيل الدخول باستخدام Google</button>
+            <div id="user-info" style="display: none;">
+                <img id="user-avatar" class="user-avatar" alt="صورة المستخدم">
+                <span id="user-name"></span>
+            </div>
+        </div>
+
+        <!-- قسم من نحن -->
+        <div class="about-section">
+            <h2>من نحن</h2>
+            <p>
+                نحن مركز فورس، الوكيل المعتمد لشركة يمن سوفت في اليمن. نقدم حلولًا برمجية متكاملة للشركات والمؤسسات.
+            </p>
+        </div>
+
+        <!-- نموذج إنشاء المنشور -->
+        <div class="post-box" id="create-post">
+            <div class="post-header">
+                <img id="post-user-avatar" class="user-avatar" alt="صورة المستخدم">
+                <textarea placeholder="ماذا يحدث؟" id="post-text"></textarea>
+            </div>
+            <div class="post-actions">
+                <button class="action-btn" onclick="toggleMediaUpload()">
+                    📸 صورة/فيديو
+                    <input type="file" id="media-upload" hidden accept="image/*,video/*">
+                </button>
+                <button class="action-btn" onclick="toggleEmojiPicker()">😀</button>
+                <button class="action-btn" onclick="publishPost()" style="margin-right: auto">نشر</button>
+            </div>
+            <div class="emoji-picker" id="emoji-picker">
+                <span onclick="addEmoji('😀')">😀</span>
+                <span onclick="addEmoji('😍')">😍</span>
+                <span onclick="addEmoji('😂')">😂</span>
+                <span onclick="addEmoji('😡')">😡</span>
+                <span onclick="addEmoji('😢')">😢</span>
+                <span onclick="addEmoji('👍')">👍</span>
+                <span onclick="addEmoji('👎')">👎</span>
+                <span onclick="addEmoji('❤️')">❤️</span>
+            </div>
+        </div>
+
+        <!-- المنشورات -->
+        <div id="posts-container"></div>
+
+        <!-- الفوتر -->
+        <div class="footer">
+            <p>© 2023 مركز فورس لتدريب والاستشارات. جميع الحقوق محفوظة.</p>
+        </div>
+    </div>
+
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+  apiKey: "AIzaSyCjeJXLC0KvSiAYepZ2zG1wZ7vSZCOIxP4",
+  authDomain: "forcyemensoft.firebaseapp.com",
+  projectId: "forcyemensoft",
+  storageBucket: "forcyemensoft.firebasestorage.app",
+  messagingSenderId: "700378177180",
+  appId: "1:700378177180:web:333d99ec4ab89949d09759",
+  measurementId: "G-Y9JN6Q17GX"
+};
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // بيانات التخزين المؤقت
+        let posts = [];
+        let currentUser = null;
+
+        // تسجيل الدخول باستخدام Google
+        const signInButton = document.getElementById('sign-in-button');
+        signInButton.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then((result) => {
+                const user = result.user;
+                currentUser = {
+                    id: user.uid,
+                    name: user.displayName,
+                    avatar: user.photoURL
+                };
+                document.getElementById('user-info').style.display = 'flex';
+                document.getElementById('user-avatar').src = currentUser.avatar;
+                document.getElementById('user-name').textContent = currentUser.name;
+                document.getElementById('post-user-avatar').src = currentUser.avatar;
+                signInButton.style.display = 'none';
+            }).catch((error) => {
+                console.error("Error signing in with Google: ", error);
+            });
+        });
+
+        // إنشاء منشور جديد
+        function publishPost() {
+            if (!currentUser) {
+                alert("يجب تسجيل الدخول أولاً.");
+                return;
+            }
+
+            const postText = document.getElementById('post-text').value;
+            const mediaFile = document.getElementById('media-upload').files[0];
+            
+            const newPost = {
+                author: currentUser,
+                content: postText,
+                media: mediaFile ? URL.createObjectURL(mediaFile) : null,
+                likes: 0,
+                comments: [],
+                timestamp: new Date()
+            };
+            
+            db.collection('posts').add(newPost).then(() => {
+                loadPosts();
+                document.getElementById('post-text').value = '';
+            }).catch((error) => {
+                console.error("Error adding post: ", error);
+            });
+        }
+
+        // جلب المنشورات من Firestore
+        function loadPosts() {
+            db.collection('posts').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+                posts = [];
+                snapshot.forEach((doc) => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                renderPosts();
+            });
+        }
+
+        // عرض المنشورات
+        function renderPosts() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+            
+            posts.forEach(post => {
+                const postHTML = `
+                    <div class="post-box" data-post-id="${post.id}">
+                        <div class="post-header">
+                            <img src="${post.author.avatar}" class="user-avatar">
+                            <div>
+                                <h4>${post.author.name}</h4>
+                                <small>${formatTime(post.timestamp)}</small>
+                            </div>
+                            <div class="post-options">
+                                <button onclick="showPostMenu(${post.id})">⋮</button>
+                                <div class="dropdown-menu" id="menu-${post.id}">
+                                    <div class="dropdown-item" onclick="sharePost(${post.id})">مشاركة</div>
+                                    <div class="dropdown-item" onclick="copyPostLink(${post.id})">نسخ الرابط</div>
+                                    ${post.author.id === currentUser.id ? 
+                                        `<div class="dropdown-item" onclick="deletePost(${post.id})">حذف</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${post.content && `<p>${post.content}</p>`}
+                        ${post.media && `<img src="${post.media}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`}
+                        
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="likePost(${post.id})">
+                                👍 ${post.likes}
+                            </button>
+                            <button class="action-btn" onclick="toggleComments(${post.id})">
+                                💬 ${post.comments.length}
+                            </button>
+                        </div>
+                        
+                        <div class="comments-section" id="comments-${post.id}">
+                            ${post.comments.map(comment => `
+                                <div class="comment">
+                                    <img src="${comment.author.avatar}" class="user-avatar">
+                                    <div class="comment-content">
+                                        <b>${comment.author.name}</b>
+                                        <p>${comment.content}</p>
+                                        <small>${formatTime(comment.timestamp)}</small>
+                                        ${comment.author.id === currentUser.id ? 
+                                            `<button onclick="deleteComment(${post.id}, ${comment.id})">حذف</button>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <div class="comment-input">
+                                <input type="text" placeholder="اكتب تعليق..." id="comment-${post.id}">
+                                <button onclick="addComment(${post.id})">إرسال</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += postHTML;
+            });
+        }
+
+        // الوظائف المساعدة
+        function formatTime(date) {
+            const options = { hour: 'numeric', minute: 'numeric' };
+            return new Intl.DateTimeFormat('ar-EG', options).format(date);
+        }
+
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addComment(postId) {
+            const commentText = document.getElementById(`comment-${post.id}`).value;
+            const post = posts.find(p => p.id === postId);
+            
+            post.comments.push({
+                id: Date.now(),
+                author: currentUser,
+                content: commentText,
+                timestamp: new Date()
+            });
+            
+            renderPosts();
+        }
+
+        function deletePost(postId) {
+            db.collection('posts').doc(postId).delete().then(() => {
+                loadPosts();
+            }).catch((error) => {
+                console.error("Error deleting post: ", error);
+            });
+        }
+
+        function showPostMenu(postId) {
+            const menu = document.getElementById(`menu-${postId}`);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleEmojiPicker() {
+            const emojiPicker = document.getElementById('emoji-picker');
+            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function addEmoji(emoji) {
+            const postText = document.getElementById('post-text');
+            postText.value += emoji;
+        }
+
+        function toggleMediaUpload() {
+            document.getElementById('media-upload').click();
+        }
+
+        function sharePost(postId) {
+            const post = posts.find(p => p.id === postId);
+            const shareUrl = post.link;
+            const shareText = encodeURIComponent(post.content);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`, '_blank');
+        }
+
+        function copyPostLink(postId) {
+            const post = posts.find(p => p.id === postId);
+            navigator.clipboard.writeText(post.link).then(() => {
+                alert("تم نسخ الرابط!");
+            });
+        }
+
+        // التهيئة الأولية
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = {
+                    id: user.uid,
+                    name: user.displayName,
+                    avatar: user.photoURL
+                };
+                document.getElementById('user-info').style.display = 'flex';
+                document.getElementById('user-avatar').src = currentUser.avatar;
+                document.getElementById('user-name').textContent = currentUser.name;
+                document.getElementById('post-user-avatar').src = currentUser.avatar;
+                signInButton.style.display = 'none';
+                loadPosts();
+            }
+        });
+    </script>
+</body>
+</html>
